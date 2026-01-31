@@ -4,64 +4,122 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Ставки от AI</title>
+
+<!-- 🔹 Подключаем Telegram SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
-:root{--bg:#0b1220;--card:#111a2e;--accent:#19f5a5;--text:#e6ebf5;--muted:#8b93a7}
-*{box-sizing:border-box;font-family:Inter,system-ui,Arial}
-body{margin:0;background:var(--bg);color:var(--text)}
-.container{max-width:420px;margin:0 auto;padding:16px}
-header{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:18px}
-header h1{color:var(--accent);font-size:26px;margin:0;display:flex;gap:8px;align-items:center}
-header .lang{position:absolute;right:0;background:#0f1830;padding:6px 10px;border-radius:10px;font-size:13px}
-.live{display:flex;align-items:center;gap:6px;font-size:12px;color:#7dffbf;margin:8px 0;justify-content:center}
-.live span{width:8px;height:8px;background:#19f5a5;border-radius:50%;animation:pulse 1.4s infinite}
+:root{
+  --bg:#0b1220; 
+  --card:#111a2e; 
+  --accent:#19f5a5; 
+  --text:#e6ebf5; 
+  --muted:#8b93a7;
+  --bg-light:#f5f5f5; 
+  --card-light:#fff; 
+  --accent-light:#19f5a5; 
+  --text-light:#222; 
+  --muted-light:#888;
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,Arial;}
+body{margin:0;background:var(--bg);color:var(--text);transition: background 0.3s, color 0.3s;}
+body.light{background:var(--bg-light);color:var(--text-light);}
+.container{max-width:420px;margin:0 auto;padding:16px;position:relative;z-index:2;}
+header{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:18px;}
+header h1{color:var(--accent);font-size:26px;margin:0;display:flex;gap:8px;align-items:center;}
+header .lang{position:absolute;right:0;background:#0f1830;padding:6px 10px;border-radius:10px;font-size:13px;cursor:pointer;color:var(--text);}
+body.light header .lang{background:#d0d0d0;color:#222;}
+.live{display:flex;align-items:center;gap:6px;font-size:12px;color:#7dffbf;margin:8px 0;justify-content:center;z-index:2;position:relative;}
+.live span{width:8px;height:8px;background:#19f5a5;border-radius:50%;animation:pulse 1.4s infinite;}
 @keyframes pulse{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
-.game{text-align:center;margin:18px 0 14px;font-weight:700;font-size:24px;background:linear-gradient(90deg,#ffd000,#ff6a00,#ff0000,#ffd000);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradientMove 4s ease infinite}
+.game{text-align:center;margin:18px 0 14px;font-weight:700;font-size:24px;background:linear-gradient(90deg,#ffd000,#ff6a00,#ff0000,#ffd000);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradientMove 4s ease infinite;}
 @keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.upload{background:#0f1830;border:1px dashed #2a3d6f;border-radius:16px;padding:18px;text-align:center;margin:16px 0;cursor:pointer}
-.upload-title{font-size:15px;margin-bottom:6px}
-.upload-sub{font-size:13px;color:var(--muted)}
-.preview img{max-width:100%;margin-top:10px;border-radius:12px}
-.btn{width:100%;background:var(--accent);border:none;border-radius:16px;padding:14px;font-size:16px;font-weight:600;color:#003;cursor:pointer}
-.btn:disabled{opacity:.6}
-#result{animation:appear .4s ease}
+.upload{background:#0f1830;border:1px dashed #2a3d6f;border-radius:16px;padding:18px;text-align:center;margin:16px 0;cursor:pointer;position:relative;overflow:hidden;color:var(--text);}
+body.light .upload{background:#e5e5e5;color:var(--text-light);border:1px dashed #aaa;}
+.upload-title{font-size:15px;margin-bottom:6px;}
+.upload-sub{font-size:13px;color:var(--muted);}
+body.light .upload-sub{color:var(--muted-light);}
+.preview img{max-width:100%;margin-top:10px;border-radius:12px;opacity:0;transition:opacity 0.4s;}
+.btn{width:100%;background:var(--accent);border:none;border-radius:16px;padding:14px;font-size:16px;font-weight:600;color:#003;cursor:pointer;transition:opacity 0.3s, color 0.3s, background 0.3s;}
+.btn:disabled{opacity:.6;}
+#result{animation:appear .4s ease;display:none;}
 @keyframes appear{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.box{background:#0f1830;border-radius:14px;padding:12px;font-size:14px}
-.box strong{display:block;margin-bottom:6px}
-.analysis-small{font-size:12px;color:var(--muted)}
-.bar{height:6px;background:#1c2a4a;border-radius:6px;overflow:hidden;margin-top:6px}
-.bar span{display:block;height:100%;background:var(--accent)}
-.risk{margin-top:6px;font-size:12px}
-footer{text-align:center;font-size:11px;color:#6c748a;margin-top:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.box{background:#0f1830;border-radius:14px;padding:12px;font-size:14px;transition:background 0.3s, color 0.3s;color:var(--text);}
+body.light .box{background:var(--card-light);color:var(--text-light);}
+.box strong{display:block;margin-bottom:6px;}
+.analysis-small{font-size:12px;color:var(--muted);}
+body.light .analysis-small{color:var(--muted-light);}
+.bar{height:6px;background:#1c2a4a;border-radius:6px;overflow:hidden;margin-top:6px;}
+.bar span{display:block;height:100%;background:var(--accent);width:0;transition:width 0.8s ease;}
+.risk{margin-top:6px;font-size:12px;color:var(--text);}
+body.light .risk{color:var(--text-light);}
+footer{text-align:center;font-size:11px;color:#6c748a;margin-top:26px;}
+body.light footer{color:#555;}
+.progress-container{width:100%;background:#1c2a4a;height:6px;border-radius:6px;overflow:hidden;margin:10px 0;display:none;}
+body.light .progress-container{background:#ccc;}
+.progress-bar{height:100%;background:var(--accent);width:0;transition:width 0.1s linear;}
+input, button{transition:background 0.3s, color 0.3s;}
+input{background:var(--card); color:var(--text); border:none;}
+body.light input{background:var(--card-light); color:var(--text-light);}
+button{color:#fff;}
+body.light button{color:#fff;}
+#limitInfo, #resetTimer{color:var(--text);}
+body.light #limitInfo, body.light #resetTimer{color:var(--text-light);}
+.snowflake{
+  position:fixed;
+  top:-10px;
+  color:white;
+  user-select:none;
+  pointer-events:none;
+  z-index:1;
+  animation-name:fall;
+  animation-iteration-count:infinite;
+  animation-timing-function:linear;
+  filter: blur(1px);
+  opacity: 0.8;
+}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0deg);}
+  100%{transform:translateY(110vh) rotate(360deg);}
+}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
 <h1>💡 Ставки от AI</h1>
-<div class="lang">RU</div>
+<div class="lang" id="themeToggle">🌓</div>
 </header>
 
 <div class="live"><span></span>LIVE AI ANALYSIS</div>
-
 <div class="game">Mortal Kombat X</div>
 
-<div class="upload" onclick="file.click()">
+<div class="upload" id="upload">
 <input type="file" id="file" accept="image/*" hidden />
 <div class="upload-title">Загрузите изображение события</div>
 <div class="upload-sub">Или просто вставьте скриншот (Ctrl + V)</div>
 <div class="preview" id="preview"></div>
 </div>
 
+<div class="progress-container" id="progressContainer"><div class="progress-bar" id="progressBar"></div></div>
 <button class="btn" id="analyze">🔍 Проанализировать ставку</button>
-<div style="text-align:center;margin-top:10px;font-size:12px;color:#8b93a7" id="limitInfo"></div>
-<div style="text-align:center;font-size:11px;color:#6f778a" id="resetTimer"></div>
-<div style="margin-top:10px;text-align:center">
-  <input id="promo" placeholder="Введите код доступа" style="padding:8px;border-radius:10px;border:none;width:70%" />
-  <button onclick="useCode()" style="margin-top:8px;padding:8px 14px;border-radius:10px;border:none;background:#1c2a4a;color:#fff">Активировать</button>
+
+<div style="text-align:center;margin-top:10px;font-size:12px;" id="limitInfo"></div>
+<div style="text-align:center;font-size:11px;" id="resetTimer"></div>
+
+<div style="margin-top:10px;text-align:center" id="promoContainer">
+<input id="promo" placeholder="Введите код доступа" style="padding:8px;border-radius:10px;border:none;width:70%" />
+<button onclick="useCode()" style="margin-top:8px;padding:8px 14px;border-radius:10px;border:none;background:#1c2a4a;color:#fff">Активировать</button>
+
+<div id="buyUnlimited" style="margin-top:8px;">
+  <a href="https://t.me/MKwiseBet/182" target="_blank" style="font-weight:bold;color:#19f5a5;text-decoration:none;">
+    💳 Купить безлимитную версию за 25$
+  </a>
+</div>
 </div>
 
-<div id="result" style="display:none">
+<div id="result">
 <div class="grid">
 <div class="box"><strong>НАДЁЖНЫЙ СИГНАЛ</strong><div id="signal"></div></div>
 <div class="box"><strong>УВЕРЕННОСТЬ AI</strong><div id="confidence"></div><div class="bar"><span id="bar"></span></div><div class="risk" id="risk"></div></div>
@@ -70,132 +128,212 @@ footer{text-align:center;font-size:11px;color:#6c748a;margin-top:26px}
 <div class="analysis-small">Анализ проведён в режиме реального времени (Live). Алгоритм учёл текущую динамику события.</div>
 <strong>Причина:</strong>
 <div id="reason"></div>
-<div class="analysis-small" style="margin-top:6px">Вероятность рассчитана на основе вероятностной модели, исторических паттернов и текущей динамики события.</div>
+<div class="analysis-small" id="extraInfo" style="margin-top:6px"></div>
 </div>
 </div>
 
 <footer>
 <div>Сайт предоставляет аналитическое мнение и не гарантирует выигрыш.<br>Все решения принимаются пользователем самостоятельно.</div>
-<div style="margin-top:8px;font-size:10px;color:#555">Сделано нейросетью BetGPT · ⓒ2026</div>
+<div style="margin-top:8px;font-size:10px;">Сделано нейросетью BetGPT · ⓒ2026</div>
 </footer>
 </div>
 
 <script>
-// ===== ЛИМИТ АНАЛИЗОВ =====
 const DAILY_LIMIT = 3;
 const UNLIMITED_CODE = 'wise1937';
-
-function todayKey(){
-  const d=new Date();
-  return `analysis_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+const signals = ['Продолжительность раунда: Больше','Продолжительность раунда: Меньше','Победа в раунде: П1','Победа в раунде: П2'];
+const reasonParts = {
+  event: ["Текущее событие показывает", "Анализ боя выявил", "Наблюдаемая динамика говорит", "Событие демонстрирует"],
+  history: ["на основе прошлых поединков", "учитывая предыдущие результаты", "с учётом статистики", "опираясь на исторические паттерны"],
+  trend: ["и текущей стратегии соперников", "и динамики действий участников", "и модели поведения команд", "и актуальных тенденций"],
+  extra: ["что повышает точность прогноза.", "что делает выводы более надёжными.", "что соответствует ожиданиям.", "что подтверждает предсказание."]
+};
+function generateReason(){
+  const r1 = reasonParts.event[Math.floor(Math.random()*reasonParts.event.length)];
+  const r2 = reasonParts.history[Math.floor(Math.random()*reasonParts.history.length)];
+  const r3 = reasonParts.trend[Math.floor(Math.random()*reasonParts.trend.length)];
+  const r4 = reasonParts.extra[Math.floor(Math.random()*reasonParts.extra.length)];
+  return `${r1} ${r2} ${r3}, ${r4}`;
 }
 
-function getUsage(){
-  return JSON.parse(localStorage.getItem(todayKey())) || {count:0,unlimited:false};
+const el = {
+analyze: document.getElementById('analyze'),
+result: document.getElementById('result'),
+file: document.getElementById('file'),
+preview: document.getElementById('preview'),
+signal: document.getElementById('signal'),
+confidence: document.getElementById('confidence'),
+bar: document.getElementById('bar'),
+risk: document.getElementById('risk'),
+reason: document.getElementById('reason'),
+extraInfo: document.getElementById('extraInfo'),
+limitInfo: document.getElementById('limitInfo'),
+resetTimer: document.getElementById('resetTimer'),
+promo: document.getElementById('promo'),
+promoContainer: document.getElementById('promoContainer'),
+progressContainer: document.getElementById('progressContainer'),
+progressBar: document.getElementById('progressBar'),
+upload: document.getElementById('upload'),
+themeToggle: document.getElementById('themeToggle'),
+buyUnlimited: document.getElementById('buyUnlimited')
+};
+
+let fixed = null;
+function todayKey(){ const d=new Date(); return `analysis_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`; }
+function getUsage(){ return JSON.parse(localStorage.getItem(todayKey()))||{count:0, unlimited:false}; }
+function saveUsage(data){ localStorage.setItem(todayKey(), JSON.stringify(data)); }
+function checkLimit(){ const u=getUsage(); return u.unlimited || u.count<DAILY_LIMIT; }
+function incUsage(){ const u=getUsage(); if(!u.unlimited) u.count++; saveUsage(u); }
+function activateUnlimited(code){ if(code===UNLIMITED_CODE){ const u=getUsage(); u.unlimited=true; saveUsage(u); return true; } return false; }
+
+function handleFile(e){
+fixed=null;
+el.result.style.display='none';
+el.preview.innerHTML='';
+const file=e.target.files[0];
+if(!file || !file.type.startsWith('image/')) return alert('Неверный файл');
+const img=document.createElement('img');
+img.src=URL.createObjectURL(file);
+img.onload=()=>{ img.style.opacity='1'; URL.revokeObjectURL(file); };
+el.preview.appendChild(img);
+}
+el.file.onchange = handleFile;
+el.upload.addEventListener('click', ()=>el.file.click());
+document.addEventListener('paste', e=>{
+for(let item of e.clipboardData.items){
+if(item.type.indexOf('image')!==-1){
+handleFile({target:{files:[item.getAsFile()]}});
+}
+}
+});
+
+function showResult(res){
+el.signal.textContent=res.signal;
+el.confidence.textContent=res.conf+'%';
+el.bar.style.width=res.conf+'%';
+el.risk.textContent=res.conf>=80?'🟢 Низкий риск':'🟡 Средний риск';
+el.reason.textContent=res.reason;
+el.extraInfo.textContent = `Анализ завершён за ${res.time}s`;
+el.result.style.display='block';
 }
 
-function saveUsage(data){
-  localStorage.setItem(todayKey(),JSON.stringify(data));
-}
-
-function checkLimit(){
-  const u=getUsage();
-  if(u.unlimited) return true;
-  return u.count < DAILY_LIMIT;
-}
-
-function incUsage(){
-  const u=getUsage();
-  if(!u.unlimited){u.count++}
-  saveUsage(u);
-}
-
-function activateUnlimited(code){
-  if(code===UNLIMITED_CODE){
-    const u=getUsage();
-    u.unlimited=true;
-    saveUsage(u);
-    return true;
-  }
-  return false;
-}
-
-const analyze=document.getElementById('analyze');
-const result=document.getElementById('result');
-const file=document.getElementById('file');
-let fixed=null;
-const signals=['Продолжительность раунда: Больше','Продолжительность раунда: Меньше','Победа в раунде: П1','Победа в раунде: П2'];
-const reasons=[...Array(500)].map(()=>
-'Анализ основан на темпе боя, плотности разменов и поведении игроков в предыдущих раундах. Модель учитывает live-динамику, адаптацию стилей и вероятностное распределение продолжительности раунда, что делает выбранный исход статистически оправданным.'
-);
-
-file.onchange=e=>{
- fixed=null; result.style.display='none';
- const img=document.createElement('img');
- img.src=URL.createObjectURL(e.target.files[0]);
- preview.innerHTML=''; preview.appendChild(img);
-}
-
-analyze.onclick=()=>{
- if(!checkLimit()){
-  alert('Достигнут дневной лимит (3 анализа). Введите код для безлимитного доступа.');
-  return;
- }
-
- if(!file.files[0])return;
- if(!fixed){
-  const conf=75+Math.floor(Math.random()*15);
-  fixed={signal:signals[Math.floor(Math.random()*2)],conf,reason:reasons[Math.floor(Math.random()*reasons.length)]};
- }
- analyze.disabled=true; const words=['Анализ начался','GPT в процессе','Получение результата']; let i=0;
- const t=setInterval(()=>{analyze.textContent=words[i++%3]},700);
- setTimeout(()=>{
-  clearInterval(t); analyze.textContent='🔍 Проанализировать ставку'; analyze.disabled=false;
-  signal.textContent=fixed.signal;
-  confidence.textContent=fixed.conf+'%'; bar.style.width=fixed.conf+'%';
-  risk.textContent=fixed.conf>=80?'🟢 Низкий риск':'🟡 Средний риск';
-  reason.textContent=fixed.reason; result.style.display='block'; incUsage(); updateLimitInfo(); updateResetTimer();
- },2200);
-}
-function updateLimitInfo(){
- const u=getUsage();
- const el=document.getElementById('limitInfo');
- if(u.unlimited){el.textContent='Безлимитный доступ активирован';}
- else{el.textContent=`Осталось бесплатных анализов: ${DAILY_LIMIT-u.count} из ${DAILY_LIMIT}`}
-}
-
+function updateLimitInfo(){ const u=getUsage(); el.limitInfo.textContent=u.unlimited?'Безлимитный доступ активирован':`Осталось бесплатных анализов: ${DAILY_LIMIT-u.count} из ${DAILY_LIMIT}`; }
+function timeToReset(){ const now=new Date(); const reset=new Date(); reset.setHours(24,0,0,0); const diff=reset-now;
+const h=Math.floor(diff/1000/60/60); const m=Math.floor(diff/1000/60%60); const s=Math.floor(diff/1000%60); return `${h}ч ${m}м ${s}с`;}
+function updateResetTimer(){ const u=getUsage(); el.resetTimer.textContent=u.unlimited?'':'Сброс лимита через: '+timeToReset();}
+setInterval(updateResetTimer,1000); updateLimitInfo(); updateResetTimer();
 function useCode(){
- const code=document.getElementById('promo').value.trim();
+ const code=el.promo.value.trim();
  if(activateUnlimited(code)){
   alert('Безлимитный доступ активирован');
-  document.getElementById('promo').style.display='none';
-  document.querySelector('#promo').nextElementSibling.style.display='none';
+  el.promoContainer.style.display='none';
+  if(el.buyUnlimited) el.buyUnlimited.style.display='none';
   updateLimitInfo();
- } else {
-  alert('Неверный код');
- }
+ } else alert('Неверный код');
 }
 
+el.themeToggle.onclick=()=>{ document.body.classList.toggle('light'); };
+
+window.addEventListener('DOMContentLoaded', () => {
+const u = getUsage();
+if(u.unlimited){
+  el.promoContainer.style.display = 'none';
+  if(el.buyUnlimited) el.buyUnlimited.style.display = 'none';
+}
+});
+
+// ===== Имитация AI анализа =====
+el.analyze.onclick = () => {
+if(!el.file.files[0]) return alert('Загрузите изображение');
+if(fixed){ showResult(fixed); return; }
+if(!checkLimit()) return alert('Достигнут дневной лимит');
+
+el.analyze.disabled = true;
+el.analyze.textContent = '⏳ Идёт анализ';
+
+analyzeWithAI(el.file.files[0]).finally(()=>{
+el.analyze.disabled = false;
+el.analyze.textContent = '🔍 Проанализировать ставку';
+});
+};
+
+async function analyzeWithAI(file){
+el.progressContainer.style.display='block';
+el.progressBar.style.width='0%';
+let progress = 0;
+const updateButtonText = () => {
+  if (progress < 30) el.analyze.textContent = '⏳ Идёт анализ';
+  else if (progress < 70) el.analyze.textContent = '🤖 GPT прогресс';
+  else if (progress < 95) el.analyze.textContent = '🔍 Анализ готовится';
+  else el.analyze.textContent = '✅ Ожидаем результат';
+};
+const interval = setInterval(()=>{
+if(progress < 30) progress += Math.random()*3 + 1;
+else if(progress < 70) progress += Math.random()*2 + 0.5;
+else if(progress < 95) progress += Math.random()*0.7 + 0.3;
+else progress += Math.random()*0.3 + 0.1;
+if(progress > 100) progress = 100;
+el.progressBar.style.width = progress + '%';
+updateButtonText();
+},80);
+await new Promise(r => setTimeout(r, 4000));
+const result = {
+signal: signals[Math.floor(Math.random()*signals.length)],
+conf: Math.floor(Math.random()*(92-75+1))+75,
+reason: generateReason(),
+time: (Math.random()*2 + 3).toFixed(1)
+};
+await new Promise(resolve=>{
+const finish = setInterval(()=>{
+if(progress >= 100){
+clearInterval(finish);
+resolve();
+} else {
+progress += 0.5;
+if(progress > 100) progress = 100;
+el.progressBar.style.width = progress + '%';
+updateButtonText();
+}
+},40);
+});
+clearInterval(interval);
+el.progressBar.style.width = '100%';
+el.progressContainer.style.display='none';
+fixed = {signal:result.signal, conf:result.conf, reason:result.reason, time:result.time};
+showResult(fixed);
+incUsage();
 updateLimitInfo();
-function timeToReset(){
- const now=new Date();
- const reset=new Date();
- reset.setHours(24,0,0,0);
- const diff=reset-now;
- const h=Math.floor(diff/1000/60/60);
- const m=Math.floor(diff/1000/60%60);
- const s=Math.floor(diff/1000%60);
- return `${h}ч ${m}м ${s}с`;
+updateResetTimer();
 }
 
-function updateResetTimer(){
- const u=getUsage();
- const el=document.getElementById('resetTimer');
- if(u.unlimited){el.textContent=''; return;}
- el.textContent='Сброс лимита через: '+timeToReset();
+// ===== Снег оптимизированный =====
+const snowflakes = [];
+const MAX_SNOWFLAKES = 30;
+function createSnow(){
+  if(snowflakes.length >= MAX_SNOWFLAKES) return;
+  const snow = document.createElement('div');
+  snow.className = 'snowflake';
+  snow.style.left = Math.random() * 100 + 'vw';
+  snow.style.fontSize = (Math.random() * 8 + 8) + 'px';
+  snow.style.animationDuration = (Math.random() * 5 + 5) + 's';
+  snow.textContent = '❄';
+  document.body.appendChild(snow);
+  snowflakes.push(snow);
+  setTimeout(() => {
+    snow.remove();
+    const index = snowflakes.indexOf(snow);
+    if(index > -1) snowflakes.splice(index, 1);
+  }, parseFloat(snow.style.animationDuration) * 1000);
 }
-
-setInterval(updateResetTimer,1000);
+const snowInterval = /Mobi|Android/i.test(navigator.userAgent) ? 400 : 200;
+setInterval(createSnow, snowInterval);
 </script>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand(); // страница развернется на весь экран
+tg.ready();   // сообщает Telegram, что страница готова
+</script>
+
 </body>
 </html>
