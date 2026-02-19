@@ -83,14 +83,260 @@ body.light #limitInfo, body.light #resetTimer{color:var(--text-light);}
   0%{transform:translateY(0) rotate(0deg);}
   100%{transform:translateY(110vh) rotate(360deg);}
 }
+/* ===== ONLINE CHAT ===== */
+.chat-wrapper{
+  margin-top:16px;
+  background:#0f1830;
+  border-radius:16px;
+  padding:12px;
+  position:relative;
+  overflow:hidden;
+  height:130px; /* чуть больше высота */
+  display:flex;
+  flex-direction:column;
+}
+
+
+.chat-header{
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.online-dot{
+  width:8px;
+  height:8px;
+  background:#19f5a5;
+  border-radius:50%;
+  animation:blink 1.2s infinite;
+}
+@keyframes blink{
+  0%{opacity:.3}
+  50%{opacity:1}
+  100%{opacity:.3}
+}
+
+.chat-messages{
+  flex:1;
+  overflow:hidden;
+  font-size:12px;
+  line-height:1.5;
+  padding-bottom:4px; /* убирает обрезание снизу */
+}
+
+
+
+.chat-line{
+  width:100%;
+  display:block;
+  text-align:left;
+  padding:2px 0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  animation:gradientText 4s linear infinite;
+  background:linear-gradient(90deg,#19f5a5,#ffd000,#ff6a00,#ff0000,#19f5a5);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+
+@keyframes gradientText{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+
+}
+
+@keyframes pulseBadge{
+  0%,100%{opacity:0.8;}
+  50%{opacity:1;}
+}
+header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  margin-bottom:18px;
+}
+
+header h1{
+  color:var(--accent);
+  font-size:26px;
+  margin:0;
+}
+
+.ai-badge{
+  margin-top:6px;
+  font-size:11px;
+  color:#19f5a5;
+  font-weight:600;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  white-space:nowrap;   /* ВАЖНО — запрет переноса строки */
+  animation:pulseBadge 2s infinite;
+}
+
+/* ===== PROMO ROW ===== */
+.promo-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: center; /* центрируем, если нужно */
+}
+
+.promo-row input {
+  flex: 0 0 200px; /* фиксированная ширина 200px */
+  max-width: 200px;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: #0f1830;
+  color: var(--text);
+  font-size: 14px;
+}
+
+body.light .promo-row input {
+  background: #e0e0e0;
+  color: var(--text-light);
+}
+
+.promo-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  background: linear-gradient(90deg,#19f5a5,#00c3ff,#19f5a5);
+  background-size: 200% 200%;
+  color: #003;
+  animation: promoGradient 3s linear infinite;
+  transition: transform 0.2s ease;
+}
+
+
+.promo-btn:hover{
+  transform:scale(1.05);
+}
+
+@keyframes promoGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+/* ==== FIX RESULT BLOCK LAYOUT ==== */
+#result .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 10px;
+  margin-top: 14px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#result .box {
+  width: auto;   /* вместо max-width:100% */
+  box-sizing: border-box;
+  background: #0f1830;
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+#result .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* две колонки */
+  gap: 10px;
+}
+
+#result .grid .box:last-child {
+  grid-column: 1 / -1; /* растягивает на обе колонки */
+}
+#snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* клики проходят сквозь снег */
+  z-index: 0; /* ниже интерфейса */
+  overflow: hidden;
+}
+
+.snowflake {
+  position: absolute;
+  color: white;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.8;
+  filter: blur(1px);
+  animation-name: fall;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(110vh) rotate(360deg); }
+}
+
+
+.tg-button {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #19f5a5, #00c3ff, #19f5a5);
+  color: #003;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.tg-button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+/* Лёгкое свечение при наведении на кнопки и блоки */
+.btn:hover,
+.promo-btn:hover,
+.tg-button:hover,
+.box:hover,
+.upload:hover {
+  box-shadow: 0 0 6px rgba(25, 245, 165, 0.5), 
+              0 0 12px rgba(0, 195, 255, 0.3);
+  transform: translateY(-2px);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
 </style>
 </head>
 <body>
+<body>
+  <!-- Контейнер для снега -->
+  <div id="snow-container"></div>
+  <div class="container">
+  </div>
+</body>
+
 <div class="container">
 <header>
-<h1>💡 Ставки от AI</h1>
-<div class="lang" id="themeToggle">🌓</div>
+  <h1>💡 Ставки от AI</h1>
+  <div class="ai-badge">
+    🤖 AI ENGINE ACTIVE · GPT ANALYTICS CORE v5.1
+  </div>
 </header>
+
 
 <div class="live"><span></span>LIVE AI ANALYSIS</div>
 <div class="game">Mortal Kombat X</div>
@@ -107,30 +353,63 @@ body.light #limitInfo, body.light #resetTimer{color:var(--text-light);}
 
 <div style="text-align:center;margin-top:10px;font-size:12px;" id="limitInfo"></div>
 <div style="text-align:center;font-size:11px;" id="resetTimer"></div>
+ <!-- ===== ONLINE CHAT ===== -->
+<div class="chat-wrapper">
+  <div class="chat-header">
+    <div class="online-dot"></div>
+    <div id="onlineCount">ONLINE: 0</div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+</div>
 
+<!-- ===== КНОПКА TG WISE ПОД ЧАТОМ ===== -->
+<div id="tgContainer" style="text-align:center; margin-top:12px; position: relative; z-index: 2;">
+  <a href="https://t.me/+JYm7PfYTmkg2MTFi" target="_blank" class="tg-button">
+    ❄️TG WISE❄️
+  </a>
+</div>
+
+
+</div>
 <div style="margin-top:10px;text-align:center" id="promoContainer">
-<input id="promo" placeholder="Введите код доступа" style="padding:8px;border-radius:10px;border:none;width:70%" />
-<button onclick="useCode()" style="margin-top:8px;padding:8px 14px;border-radius:10px;border:none;background:#1c2a4a;color:#fff">Активировать</button>
+<div class="promo-row">
+  <input id="promo" placeholder="Введите код доступа" />
+  <button class="promo-btn" onclick="useCode()">⚡ Активировать</button>
+</div>
 
 <div id="buyUnlimited" style="margin-top:8px;">
   <a href="https://t.me/WiseBogLev" target="_blank" style="font-weight:bold;color:#19f5a5;text-decoration:none;">
     💳 Купить безлимитную версию
   </a>
+
 </div>
 </div>
 
-<div id="result">
-<div class="grid">
-<div class="box"><strong>НАДЁЖНЫЙ СИГНАЛ</strong><div id="signal"></div></div>
-<div class="box"><strong>УВЕРЕННОСТЬ AI</strong><div id="confidence"></div><div class="bar"><span id="bar"></span></div><div class="risk" id="risk"></div></div>
+<<div id="result">
+  <div class="grid">
+    <div class="box" id="boxSignal">
+      <strong>НАДЁЖНЫЙ СИГНАЛ</strong>
+      <div id="signal"></div>
+    </div>
+
+    <div class="box" id="boxConfidence">
+      <strong>УВЕРЕННОСТЬ AI</strong>
+      <div id="confidence"></div>
+      <div class="bar"><span id="bar"></span></div>
+      <div class="risk" id="risk"></div>
+    </div>
+
+    <div class="box" id="boxReason">
+      <div class="analysis-small">
+        Анализ проведён в режиме реального времени (Live). Алгоритм учёл текущую динамику события.
+      </div>
+      <strong>Причина:</strong>
+      <div id="reason"></div>
+      <div class="analysis-small" id="extraInfo" style="margin-top:6px"></div>
+    </div>
+  </div>
 </div>
-<div class="box" style="margin-top:10px">
-<div class="analysis-small">Анализ проведён в режиме реального времени (Live). Алгоритм учёл текущую динамику события.</div>
-<strong>Причина:</strong>
-<div id="reason"></div>
-<div class="analysis-small" id="extraInfo" style="margin-top:6px"></div>
-</div>
-</div>
+
 
 <footer>
 <div>Сайт предоставляет аналитическое мнение и не гарантирует выигрыш.<br>Все решения принимаются пользователем самостоятельно.</div>
@@ -223,16 +502,28 @@ const h=Math.floor(diff/1000/60/60); const m=Math.floor(diff/1000/60%60); const 
 function updateResetTimer(){ const u=getUsage(); el.resetTimer.textContent=u.unlimited?'':'Сброс лимита через: '+timeToReset();}
 setInterval(updateResetTimer,1000); updateLimitInfo(); updateResetTimer();
 function useCode(){
- const code=el.promo.value.trim();
+ const code = el.promo.value.trim();
  if(activateUnlimited(code)){
   alert('Безлимитный доступ активирован');
-  el.promoContainer.style.display='none';
-  if(el.buyUnlimited) el.buyUnlimited.style.display='none';
+
+  // Скрываем только строку ввода промокода
+  const promoRow = el.promoContainer.querySelector('.promo-row');
+  if(promoRow) promoRow.style.display = 'none';
+
+  // Скрываем кнопку "Купить безлимит"
+  if(el.buyUnlimited) el.buyUnlimited.style.display = 'none';
+
   updateLimitInfo();
- } else alert('Неверный код');
+ } else {
+  alert('Неверный код');
+ }
 }
 
-el.themeToggle.onclick=()=>{ document.body.classList.toggle('light'); };
+
+if(el.themeToggle){
+  el.themeToggle.onclick=()=>{ document.body.classList.toggle('light'); };
+}
+
 
 window.addEventListener('DOMContentLoaded', () => {
 const u = getUsage();
@@ -307,9 +598,11 @@ updateResetTimer();
 }
 
 // ===== Снег оптимизированный =====
+const snowContainer = document.getElementById('snow-container');
 const snowflakes = [];
 const MAX_SNOWFLAKES = 30;
-function createSnow(){
+
+function createSnow() {
   if(snowflakes.length >= MAX_SNOWFLAKES) return;
   const snow = document.createElement('div');
   snow.className = 'snowflake';
@@ -317,22 +610,92 @@ function createSnow(){
   snow.style.fontSize = (Math.random() * 8 + 8) + 'px';
   snow.style.animationDuration = (Math.random() * 5 + 5) + 's';
   snow.textContent = '❄';
-  document.body.appendChild(snow);
+  snowContainer.appendChild(snow); // добавляем в контейнер
   snowflakes.push(snow);
+
   setTimeout(() => {
     snow.remove();
     const index = snowflakes.indexOf(snow);
     if(index > -1) snowflakes.splice(index, 1);
   }, parseFloat(snow.style.animationDuration) * 1000);
 }
+
 const snowInterval = /Mobi|Android/i.test(navigator.userAgent) ? 400 : 200;
 setInterval(createSnow, snowInterval);
+
 </script>
 
 <script>
 const tg = window.Telegram.WebApp;
 tg.expand(); // страница развернется на весь экран
 tg.ready();   // сообщает Telegram, что страница готова
+</script>
+<script>
+// ===== ONLINE USERS DYNAMIC (MSK TIME) =====
+const USER_PEAK_SETTINGS = {
+  morning: 0.8,   // пик утром (6-10)
+  day: 2.1,       // пик днём (11-16)
+  evening: 2.3,   // пик вечером (17-22)
+  night: 1.5      // пик ночью (23-5)
+};
+
+function getMSKHour(){
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const msk = new Date(utc + (3 * 3600000));
+  return msk.getHours();
+}
+
+function calculateOnlineUsers(){
+  const hour = getMSKHour();
+  let base = 60;
+
+  if(hour >= 6 && hour <= 10) base *= USER_PEAK_SETTINGS.morning;
+  else if(hour >= 11 && hour <= 16) base *= USER_PEAK_SETTINGS.day;
+  else if(hour >= 17 && hour <= 22) base *= USER_PEAK_SETTINGS.evening;
+  else base *= USER_PEAK_SETTINGS.night;
+
+  return Math.floor(base + Math.random()*40);
+}
+
+function updateOnline(){
+  document.getElementById('onlineCount').textContent =
+    'ONLINE: ' + calculateOnlineUsers();
+}
+setInterval(updateOnline, 5000);
+updateOnline();
+
+
+// ===== FAKE LIVE CHAT =====
+const chat = document.getElementById('chatMessages');
+
+const names = ["𝓢𝓱𝓪𝓭𝓸𝔀_ₓ🌌","Анна","𝕹𝖎𝖌𝖍𝖙𝕽𝖎𝖉𝖊𝖗🌙","Саша","𝓑𝓵𝓪𝔃𝓮𝓕𝓲𝓻𝓮🔥","𝓢𝓱𝓪𝓭𝓸𝔀_ₓ🌌","Анна","𝕹𝖎𝖌𝖍𝖙𝕽𝖎𝖉𝖊𝖗🌙","Саша","𝓑𝓵𝓪𝔃𝓮𝓕𝓲𝓻𝓮🔥","Алекс💎","𝓒𝓱𝓲𝓵𝓵𝓥𝓲𝓫𝓮𝓼","Катя🍀","𝕮𝖞𝖇𝖊𝖗𝖂𝖔𝖑𝖋🐺","Иван","𝔇𝔯𝔢𝔞𝔪𝔢𝔯💭","Лена","𝓕𝓻𝓸𝓼𝓽𝓑𝓲𝓽𝓮❄️","Никита","𝓝𝓮𝓸𝓷𝓢𝓽𝓪𝓻🌟","Ольга","Фантом","Дима","𝓢𝓹𝓪𝓻𝓴𝓟𝓵𝓾𝓰","Мария💖","𝓥𝓲𝓫𝓮𝓢𝓮𝓮𝓴𝓮𝓻🎵","Игорь","𝓜𝔂𝔰𝓽𝓲𝓬𝓦𝓪𝓿𝓮🌊","Таня","𝓢𝓱𝓪𝓭𝓸𝔀𝓕𝓸𝔁🦊","Сергей","GhostRider🏍","Полина","𝓔𝓵𝓮𝓬𝓽𝓻𝓲𝓬𝓢𝓸𝓾𝓵⚡","Роман","𝓒𝓸𝓼𝓶𝓲𝓬𝓓𝓾𝓼𝓽☄️","Алина","RebelHeart❤️‍🔥","Михаил","𝓢𝓴𝔂𝓦𝓪𝓵𝓴𝓮𝓻🚀","Наталья","LightSpeed⚡","Юлия","𝓣𝓱𝓾𝓷𝓭𝓮𝓻𝓑𝓸𝓵𝓽","Виктор","ArcticFox🦊","Диана","𝓠𝓾𝓪𝓷𝓽𝓾𝓶🔮","Андрей","𝕊𝕚𝕝𝕖𝕟𝕥𝕊𝕥𝕠𝕣𝕞","Ирина","FlameWing🔥","Олег","IceBreaker❄️","Кристина","𝓢𝓸𝓵𝓪𝓻𝓕𝓵𝓪𝓻𝓮☀️","Артем","LunarShadow🌙"];
+const actions = [
+  'зашёл в бой — Mortal Kombat X',
+  'сделал ставку — Mortal Kombat X',
+  'поставил на П1 — Mortal Kombat X',
+  'поставил на П2 — Mortal Kombat X',
+  'выбрал ТБ — Mortal Kombat X',
+  'выбрал ТМ — Mortal Kombat X',
+  'получил выплату — Mortal Kombat X',
+  'увеличил ставку — Mortal Kombat X'
+];
+
+function addMessage(){
+  const line = document.createElement('div');
+  line.className = 'chat-line';
+  const name = names[Math.floor(Math.random()*names.length)];
+  const action = actions[Math.floor(Math.random()*actions.length)];
+  line.textContent = name + ' ' + action;
+
+  chat.appendChild(line);
+
+  if(chat.children.length > 4){
+    chat.removeChild(chat.children[0]);
+  }
+}
+
+setInterval(addMessage, 3500);
 </script>
 
 </body>
