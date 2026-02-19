@@ -318,6 +318,19 @@ body.light .promo-row input {
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
+body, html {
+  margin: 0;
+  padding: 0; /* убираем любые внутренние отступы */
+}
+
+.container {
+  padding-top: 8px; /* можно оставить небольшой внутренний отступ, если нужен */
+}
+
+header {
+  margin-top: 0;    /* убираем верхний margin */
+  margin-bottom: 18px; /* оставляем нижний, чтобы блоки не слипались */
+}
 
 </style>
 </head>
